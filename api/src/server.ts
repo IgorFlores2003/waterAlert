@@ -24,16 +24,16 @@ app.post("/api/users", async (req: Request, res: Response) => {
 
     const waterGoal = WaterService.calculateGoal(weight, height, age);
 
-    const [id] = await db("users").insert({
+    const [user] = await db("users").insert({
       name,
       weight,
       height,
       age,
       gender,
       water_goal_ml: waterGoal
-    });
+    }).returning("*");
 
-    res.status(201).json({ id, name, water_goal_ml: waterGoal });
+    res.status(201).json(user);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -52,7 +52,7 @@ app.put("/api/users/:id", async (req: Request, res: Response) => {
 
     const waterGoal = WaterService.calculateGoal(weight, height, age);
 
-    await db("users").where({ id }).update({
+    const [updatedUser] = await db("users").where({ id }).update({
       name,
       weight,
       height,
@@ -60,9 +60,9 @@ app.put("/api/users/:id", async (req: Request, res: Response) => {
       gender,
       water_goal_ml: waterGoal,
       updated_at: db.fn.now()
-    });
+    }).returning("*");
 
-    res.json({ id, name, water_goal_ml: waterGoal });
+    res.json(updatedUser);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -86,7 +86,7 @@ app.get("/api/users/:id/progress", async (req: Request, res: Response) => {
     const userId = req.params.id;
     const history = await db("intake_history")
       .where({ user_id: userId })
-      .whereRaw("DATE(consumed_at) = CURDATE()");
+      .whereRaw("consumed_at::date = CURRENT_DATE");
     
     const total = history.reduce((acc, curr) => acc + curr.amount_ml, 0);
     res.json({ total_consumed: total });
@@ -101,7 +101,7 @@ app.delete("/api/users/:id/progress/today", async (req: Request, res: Response) 
     const userId = req.params.id;
     await db("intake_history")
       .where({ user_id: userId })
-      .whereRaw("DATE(consumed_at) = CURDATE()")
+      .whereRaw("consumed_at::date = CURRENT_DATE")
       .del();
     
     res.json({ message: "Daily progress reset" });

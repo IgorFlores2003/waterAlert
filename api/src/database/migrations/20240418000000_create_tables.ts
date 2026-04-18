@@ -12,7 +12,7 @@ export async function up(knex: Knex): Promise<void> {
     table.timestamps(true, true);
   }).createTable("intake_history", (table) => {
     table.increments("id").primary();
-    table.integer("user_id").unsigned().references("id").inTable("users").onDelete("CASCADE");
+    table.integer("user_id").references("id").inTable("users").onDelete("CASCADE");
     table.integer("amount_ml").notNullable();
     table.timestamp("consumed_at").defaultTo(knex.fn.now());
   });
