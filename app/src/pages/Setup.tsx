@@ -81,25 +81,25 @@ const Setup: React.FC = () => {
           </IonText>
 
           <div className="glass-card setup-form">
-            <IonItem fill="outline" className="glass-item">
+            <IonItem className="glass-item">
               <IonIcon icon={personOutline} slot="start" />
               <IonLabel position="floating">Nome</IonLabel>
               <IonInput value={name} onIonInput={(e) => setName(e.detail.value!)} />
             </IonItem>
 
-            <IonItem fill="outline" className="glass-item">
+            <IonItem className="glass-item">
               <IonIcon icon={barbellOutline} slot="start" />
               <IonLabel position="floating">Peso (kg)</IonLabel>
               <IonInput type="number" value={weight} onIonInput={(e) => setWeight(parseInt(e.detail.value!))} />
             </IonItem>
 
-            <IonItem fill="outline" className="glass-item">
+            <IonItem className="glass-item">
               <IonIcon icon={resizeOutline} slot="start" />
               <IonLabel position="floating">Altura (cm)</IonLabel>
               <IonInput type="number" value={height} onIonInput={(e) => setHeight(parseInt(e.detail.value!))} />
             </IonItem>
 
-            <IonItem fill="outline" className="glass-item">
+            <IonItem className="glass-item">
               <IonIcon icon={calendarOutline} slot="start" />
               <IonLabel position="floating">Idade</IonLabel>
               <IonInput type="number" value={age} onIonInput={(e) => setAge(parseInt(e.detail.value!))} />
