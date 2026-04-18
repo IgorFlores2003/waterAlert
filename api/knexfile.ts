@@ -6,7 +6,10 @@ dotenv.config({ path: "./.env" });
 const config: { [key: string]: Knex.Config } = {
   development: {
     client: "pg",
-    connection: process.env.DATABASE_URL as string,
+    connection: {
+      connectionString: process.env.DATABASE_URL as string,
+      ssl: { rejectUnauthorized: false }
+    },
     migrations: {
       directory: "./src/database/migrations",
       extension: "ts",
