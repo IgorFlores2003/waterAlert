@@ -1,7 +1,0 @@
-{
-  "name": "waterAlert",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "angular"
-}

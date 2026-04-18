@@ -1,0 +1,35 @@
+/** Ionic CSS Variables **/
+:root {
+  /** primary **/
+  --ion-color-primary: #00B4DB;
+  --ion-color-primary-rgb: 0, 180, 219;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #009ec1;
+  --ion-color-primary-tint: #1abce1;
+
+  /** Custom Background Gradient **/
+  --water-gradient: linear-gradient(135deg, #00B4DB 0%, #0083B0 100%);
+  --glass-background: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+}
+
+/* Glassmorphism utility */
+.glass-card {
+  background: var(--glass-background);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+}
+
+.premium-content {
+  background: var(--water-gradient);
+  color: white;
+  min-height: 100%;
+}
+
+ion-content {
+  --background: var(--water-gradient);
+}
