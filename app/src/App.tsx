@@ -56,11 +56,11 @@ const App: React.FC = () => {
             try {
               if (actionId === 'drink_250') {
                 await api.logIntake(parseInt(userId), 250);
-                setToastMessage('250ml registrados com sucesso! 💧');
+                setToastMessage('250ml registrados com sucesso!');
                 setShowToast(true);
               } else if (actionId === 'drink_500') {
                 await api.logIntake(parseInt(userId), 500);
-                setToastMessage('500ml registrados com sucesso! 🌊');
+                setToastMessage('500ml registrados com sucesso!');
                 setShowToast(true);
               }
             } catch (error) {

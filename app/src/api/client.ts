@@ -13,6 +13,9 @@ export const api = {
 
   updateUser: (id: string, data: { name: string; weight: number; height: number; age: number }) => 
     client.put(`/users/${id}`, data),
+
+  resetProgress: (userId: string) => 
+    client.delete(`/users/${userId}/progress/today`),
   
   logIntake: (userId: number, amountMl: number) => 
     client.post('/intake', { user_id: userId, amount_ml: amountMl }),

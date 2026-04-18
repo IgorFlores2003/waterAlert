@@ -18,13 +18,121 @@
   align-items: center;
 }
 
-.settings-btn {
-  font-size: 28px;
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.action-icon-btn {
+  font-size: 24px;
   color: white;
   background: rgba(255, 255, 255, 0.1);
-  padding: 10px;
+  padding: 8px;
   border-radius: 12px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.action-icon-btn:active {
+  transform: scale(0.9);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.timeline-section {
+  margin-top: 40px;
+  padding-bottom: 40px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.section-subtitle {
+  font-size: 14px;
+  opacity: 0.8;
+  margin-bottom: 20px;
+}
+
+.timeline-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline-item {
+  display: flex;
+  min-height: 70px;
+  gap: 15px;
+}
+
+.time-col {
+  width: 50px;
+  font-size: 13px;
+  font-weight: 500;
+  padding-top: 10px;
+}
+
+.indicator-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.indicator-col .line {
+  flex: 1;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.indicator-col .dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: #0d47a1;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.5s ease;
+}
+
+.timeline-item.completed .indicator-col .dot {
+  background: #4caf50;
+  border-color: #4caf50;
+  color: white;
+  font-size: 12px;
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.4);
+}
+
+.timeline-item.completed .indicator-col .line {
+  background: #4caf50;
+}
+
+.content-col {
+  flex: 1;
+  padding-bottom: 15px;
+}
+
+.timeline-card {
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  border-radius: 14px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.timeline-item.completed .timeline-card {
+  opacity: 0.6;
 }
 
 .progress-circle-container {

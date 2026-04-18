@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { IonContent, IonPage, IonText, IonIcon, IonFab, IonFabButton, IonLabel, useIonViewWillEnter, useIonRouter } from '@ionic/react';
-import { addOutline, beerOutline, colorFillOutline, waterOutline, settingsOutline } from 'ionicons/icons';
+import { IonContent, IonPage, IonText, IonIcon, IonLabel, useIonViewWillEnter, useIonRouter, IonToast } from '@ionic/react';
+import { addOutline, beerOutline, colorFillOutline, waterOutline, settingsOutline, refreshOutline, timeOutline, checkmarkCircleOutline } from 'ionicons/icons';
 import { api } from '../api/client';
 import './Home.css';
 
@@ -9,6 +9,7 @@ const Home: React.FC = () => {
   const [totalConsumed, setTotalConsumed] = useState(0);
   const [goal, setGoal] = useState(0);
   const [name, setName] = useState('');
+  const [showResetToast, setShowResetToast] = useState(false);
   const userId = localStorage.getItem('user_id');
 
   const fetchData = async () => {
@@ -48,7 +49,22 @@ const Home: React.FC = () => {
     }
   };
 
+  const restartDay = async () => {
+    if (!userId) return;
+    try {
+      await api.resetProgress(userId);
+      setShowResetToast(true);
+      fetchData();
+    } catch (error) {
+      console.error('Failed to reset day', error);
+    }
+  };
+
   const percentage = Math.min((totalConsumed / goal) * 100, 100);
+
+  // Generate Alert Timeline (8:00 to 20:00 - 12 hours)
+  const mlPerAlert = Math.ceil(goal / 12);
+  const hours = Array.from({ length: 13 }, (_, i) => 8 + i);
 
   return (
     <IonPage>
@@ -60,8 +76,13 @@ const Home: React.FC = () => {
                 <h2>Olá, {name}!</h2>
                 <p>Mantenha-se hidratado hoje</p>
               </IonText>
-              <div className="settings-btn" onClick={() => router.push('/setup')}>
-                <IonIcon icon={settingsOutline} />
+              <div className="header-actions">
+                <div className="action-icon-btn" onClick={restartDay}>
+                  <IonIcon icon={refreshOutline} />
+                </div>
+                <div className="action-icon-btn" onClick={() => router.push('/setup')}>
+                  <IonIcon icon={settingsOutline} />
+                </div>
               </div>
             </div>
           </div>
@@ -88,13 +109,47 @@ const Home: React.FC = () => {
               <IonLabel>500ml</IonLabel>
             </div>
           </div>
+
+          <div className="timeline-section">
+            <IonText color="light">
+              <h3 className="section-title">Programação de Hoje</h3>
+              <p className="section-subtitle">Meta por alerta: <strong>{mlPerAlert}ml</strong></p>
+            </IonText>
+
+            <div className="timeline-container">
+              {hours.map((hour) => (
+                <div key={hour} className={`timeline-item ${totalConsumed >= (hour - 7) * mlPerAlert ? 'completed' : ''}`}>
+                  <div className="time-col">
+                    <IonText color="light">
+                      <span>{hour.toString().padStart(2, '0')}:00</span>
+                    </IonText>
+                  </div>
+                  <div className="indicator-col">
+                    <div className="line"></div>
+                    <div className="dot">
+                      {totalConsumed >= (hour - 7) * mlPerAlert && <IonIcon icon={checkmarkCircleOutline} />}
+                    </div>
+                  </div>
+                  <div className="content-col">
+                    <div className="glass-card timeline-card">
+                      <IonIcon icon={timeOutline} slot="start" />
+                      <IonLabel>Beber {mlPerAlert}ml</IonLabel>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
-        <IonFab vertical="bottom" horizontal="end" slot="fixed">
-          <IonFabButton onClick={() => addWater(200)}>
-            <IonIcon icon={addOutline} />
-          </IonFabButton>
-        </IonFab>
+        <IonToast
+          isOpen={showResetToast}
+          onDidDismiss={() => setShowResetToast(false)}
+          message="Dia reiniciado! Começando do zero."
+          duration={2000}
+          position="top"
+          color="warning"
+        />
       </IonContent>
     </IonPage>
   );

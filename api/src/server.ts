@@ -95,6 +95,21 @@ app.get("/api/users/:id/progress", async (req: Request, res: Response) => {
   }
 });
 
+// 5. Reset Daily Progress
+app.delete("/api/users/:id/progress/today", async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.id;
+    await db("intake_history")
+      .where({ user_id: userId })
+      .whereRaw("DATE(consumed_at) = CURDATE()")
+      .del();
+    
+    res.json({ message: "Daily progress reset" });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
