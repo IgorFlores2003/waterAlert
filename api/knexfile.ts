@@ -6,7 +6,7 @@ dotenv.config({ path: "./.env" });
 const config: { [key: string]: Knex.Config } = {
   development: {
     client: "pg",
-    connection: process.env.DATABASE_URL,
+    connection: process.env.DATABASE_URL as string,
     migrations: {
       directory: "./src/database/migrations",
       extension: "ts",
@@ -18,7 +18,7 @@ const config: { [key: string]: Knex.Config } = {
   },
   production: {
     client: "pg",
-    connection: process.env.DATABASE_URL,
+    connection: process.env.DATABASE_URL as string,
     migrations: {
       directory: "./dist/src/database/migrations",
       extension: "js",
