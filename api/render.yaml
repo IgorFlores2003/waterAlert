@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: wateralert-backend
+    env: node
+    plan: free # Você pode mudar para 'starter' se quiser mais performance
+    region: ohio # Ou a região mais próxima de você
+    buildCommand: npm install && npm run build
+    startCommand: npm run migrate && npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - fromContext: DATABASE_URL # Vai ler da sua config no painel se você preferir, ou você adiciona lá
