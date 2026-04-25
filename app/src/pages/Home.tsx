@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { IonContent, IonPage, IonText, IonIcon, IonLabel, useIonViewWillEnter, useIonRouter, IonToast } from '@ionic/react';
-import { addOutline, beerOutline, colorFillOutline, waterOutline, settingsOutline, refreshOutline, timeOutline, checkmarkCircleOutline } from 'ionicons/icons';
+import { IonContent, IonPage, IonText, IonIcon, IonLabel, useIonViewWillEnter, useIonRouter, IonToast, IonAlert } from '@ionic/react';
+import { addOutline, wineOutline, colorFillOutline, waterOutline, settingsOutline, refreshOutline, timeOutline, checkmarkCircleOutline } from 'ionicons/icons';
 import { api } from '../api/client';
 import './Home.css';
 
@@ -10,6 +10,7 @@ const Home: React.FC = () => {
   const [goal, setGoal] = useState(0);
   const [name, setName] = useState('');
   const [showResetToast, setShowResetToast] = useState(false);
+  const [showCustomAlert, setShowCustomAlert] = useState(false);
   const userId = localStorage.getItem('user_id');
 
   const fetchData = async () => {
@@ -100,13 +101,13 @@ const Home: React.FC = () => {
           </div>
 
           <div className="quick-actions">
-            <div className="glass-card action-card" onClick={() => addWater(250)}>
-              <IonIcon icon={colorFillOutline} />
-              <IonLabel>250ml</IonLabel>
+            <div className="glass-card action-card" onClick={() => addWater(180)}>
+              <IonIcon icon={wineOutline} />
+              <IonLabel>180ml</IonLabel>
             </div>
-            <div className="glass-card action-card" onClick={() => addWater(500)}>
-              <IonIcon icon={beerOutline} />
-              <IonLabel>500ml</IonLabel>
+            <div className="glass-card action-card" onClick={() => setShowCustomAlert(true)}>
+              <IonIcon icon={addOutline} />
+              <IonLabel>Personalizado</IonLabel>
             </div>
           </div>
 
@@ -149,6 +150,34 @@ const Home: React.FC = () => {
           duration={2000}
           position="top"
           color="warning"
+        />
+
+        <IonAlert
+          isOpen={showCustomAlert}
+          onDidDismiss={() => setShowCustomAlert(false)}
+          header={'Quanto você bebeu?'}
+          inputs={[
+            {
+              name: 'amount',
+              type: 'number',
+              placeholder: 'Quantidade em ml'
+            }
+          ]}
+          buttons={[
+            {
+              text: 'Cancelar',
+              role: 'cancel',
+              cssClass: 'secondary',
+            },
+            {
+              text: 'Adicionar',
+              handler: (data) => {
+                if (data.amount) {
+                  addWater(parseInt(data.amount));
+                }
+              }
+            }
+          ]}
         />
       </IonContent>
     </IonPage>
