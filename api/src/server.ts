@@ -8,6 +8,9 @@ import { WaterService } from "./services/waterService.js";
 const app = express();
 
 const env = process.env.NODE_ENV || "development";
+console.log(`🚀 Starting in environment: ${env}`);
+console.log(`DATABASE_URL present: ${!!process.env.DATABASE_URL}`);
+
 const db = knex(knexConfig[env]!);
 
 // Test connection
@@ -106,7 +109,7 @@ app.get("/api/users/:id/progress", async (req: Request, res: Response) => {
     console.error("Error getting progress:", error);
     res.status(500).json({ 
       error: "Internal Server Error", 
-      details: error instanceof Error ? error.message : String(error) 
+      details: error instanceof Error ? error.message : JSON.stringify(error) 
     });
   }
 });
