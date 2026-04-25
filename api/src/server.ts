@@ -6,7 +6,16 @@ import knexConfig from "../knexfile.js";
 import { WaterService } from "./services/waterService.js";
 
 const app = express();
-const db = knex(knexConfig.development!);
+
+const env = process.env.NODE_ENV || "development";
+const db = knex(knexConfig[env]!);
+
+// Test connection
+db.raw('SELECT 1').then(() => {
+  console.log('✅ Database connected successfully');
+}).catch((err) => {
+  console.error('❌ Database connection failed:', err);
+});
 
 app.use(cors());
 app.use(express.json());
@@ -35,8 +44,11 @@ app.post("/api/users", async (req: Request, res: Response) => {
 
     res.status(201).json(user);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error creating user:", error);
+    res.status(500).json({ 
+      error: "Internal Server Error", 
+      details: error instanceof Error ? error.message : String(error) 
+    });
   }
 });
 
@@ -91,7 +103,11 @@ app.get("/api/users/:id/progress", async (req: Request, res: Response) => {
     const total = history.reduce((acc, curr) => acc + curr.amount_ml, 0);
     res.json({ total_consumed: total });
   } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error getting progress:", error);
+    res.status(500).json({ 
+      error: "Internal Server Error", 
+      details: error instanceof Error ? error.message : String(error) 
+    });
   }
 });
 
