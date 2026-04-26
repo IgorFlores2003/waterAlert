@@ -4,6 +4,13 @@ import cors from "cors";
 import knex from "knex";
 import knexConfig from "../knexfile.js";
 import { WaterService } from "./services/waterService.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { EmailService } from "./services/emailService.js";
+import { authMiddleware } from "./middleware/authMiddleware.js";
+import type { AuthRequest } from "./middleware/authMiddleware.js";
+
+const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key-123";
 
 const app = express();
 
@@ -22,6 +29,119 @@ db.raw('SELECT 1').then(() => {
 
 app.use(cors());
 app.use(express.json());
+
+// Auth Routes
+
+// Signup
+app.post("/api/auth/signup", async (req: Request, res: Response) => {
+  try {
+    const { name, email, password, weight, height, age, gender } = req.body;
+
+    if (!email || !password || !name || !weight || !height || !age) {
+      return res.status(400).json({ error: "Preencha todos os campos obrigatórios." });
+    }
+
+    const userExists = await db("users").where({ email }).first();
+    if (userExists) {
+      return res.status(400).json({ error: "User already exists" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const waterGoal = WaterService.calculateGoal(weight, height, age);
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    const [user] = await db("users").insert({
+      name,
+      email,
+      password: hashedPassword,
+      weight,
+      height,
+      age,
+      gender,
+      water_goal_ml: waterGoal,
+      verification_code: verificationCode,
+      is_verified: false
+    }).returning("*");
+
+    // Send verification email
+    await EmailService.sendVerificationEmail(email, name, verificationCode);
+
+    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "30d" });
+
+    res.status(201).json({ user, token });
+  } catch (error) {
+    console.error("Signup error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Verification Route
+app.post("/api/auth/verify", async (req: Request, res: Response) => {
+  try {
+    const { email, code } = req.body;
+
+    if (!email || !code) {
+      return res.status(400).json({ error: "E-mail e código são obrigatórios." });
+    }
+
+    const user = await db("users").where({ email }).first();
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (user.verification_code !== code) {
+      return res.status(400).json({ error: "Invalid verification code" });
+    }
+
+    await db("users").where({ email }).update({
+      is_verified: true,
+      verification_code: null
+    });
+
+    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "30d" });
+
+    res.json({ 
+      message: "Email verified successfully", 
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        water_goal_ml: user.water_goal_ml
+      },
+      token 
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Login
+app.post("/api/auth/login", async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: "Missing email or password" });
+    }
+
+    const user = await db("users").where({ email }).first();
+    if (!user || !user.password) {
+      return res.status(400).json({ error: "Invalid credentials" });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ error: "Invalid credentials" });
+    }
+
+    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "30d" });
+
+    res.json({ user, token });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 // Routes
 
@@ -56,10 +176,10 @@ app.post("/api/users", async (req: Request, res: Response) => {
 });
 
 // 2. Update User Profile
-app.put("/api/users/:id", async (req: Request, res: Response) => {
+app.put("/api/users/profile", authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const { name, weight, height, age, gender } = req.body;
-    const { id } = req.params;
+    const userId = req.user?.id;
 
     if (!weight || !height || !age) {
       return res.status(400).json({ error: "Missing required fields for calculation" });
@@ -67,7 +187,7 @@ app.put("/api/users/:id", async (req: Request, res: Response) => {
 
     const waterGoal = WaterService.calculateGoal(weight, height, age);
 
-    const [updatedUser] = await db("users").where({ id }).update({
+    const [updatedUser] = await db("users").where({ id: userId }).update({
       name,
       weight,
       height,
@@ -84,11 +204,12 @@ app.put("/api/users/:id", async (req: Request, res: Response) => {
   }
 });
 
-// 3. Get User Profile
-app.post("/api/intake", async (req: Request, res: Response) => {
+// 3. Log Intake
+app.post("/api/intake", authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const { user_id, amount_ml } = req.body;
-    await db("intake_history").insert({ user_id, amount_ml });
+    const { amount_ml } = req.body;
+    const userId = req.user?.id;
+    await db("intake_history").insert({ user_id: userId, amount_ml });
     res.status(201).json({ message: "Intake logged" });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
@@ -96,9 +217,9 @@ app.post("/api/intake", async (req: Request, res: Response) => {
 });
 
 // 4. Get Daily Progress
-app.get("/api/users/:id/progress", async (req: Request, res: Response) => {
+app.get("/api/users/progress", authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.params.id;
+    const userId = req.user?.id;
     const history = await db("intake_history")
       .where({ user_id: userId })
       .whereRaw("consumed_at::date = CURRENT_DATE");
@@ -115,9 +236,9 @@ app.get("/api/users/:id/progress", async (req: Request, res: Response) => {
 });
 
 // 5. Reset Daily Progress
-app.delete("/api/users/:id/progress/today", async (req: Request, res: Response) => {
+app.delete("/api/users/progress/today", authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.params.id;
+    const userId = req.user?.id;
     await db("intake_history")
       .where({ user_id: userId })
       .whereRaw("consumed_at::date = CURRENT_DATE")

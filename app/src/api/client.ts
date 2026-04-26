@@ -4,22 +4,32 @@ const client = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001/api',
 });
 
+// Add a request interceptor to include the JWT token
+client.interceptors.request.use((config) => {
+  const token = localStorage.getItem('auth_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 export const api = {
-  registerUser: (data: { name: string; weight: number; height: number; age: number }) => 
-    client.post('/users', data),
-  
-  getUserProfile: (id: string) => 
-    client.get(`/users/${id}`),
+  // Auth
+  login: (data: any) => client.post('/auth/login', data),
+  signup: (data: any) => client.post('/auth/signup', data),
+  verifyEmail: (data: { email: string, code: string }) => client.post('/auth/verify', data),
 
-  updateUser: (id: string, data: { name: string; weight: number; height: number; age: number }) => 
-    client.put(`/users/${id}`, data),
+  // Profile
+  updateProfile: (data: { name: string; weight: number; height: number; age: number }) => 
+    client.put('/users/profile', data),
 
-  resetProgress: (userId: string) => 
-    client.delete(`/users/${userId}/progress/today`),
+  // Water Intake
+  resetProgress: () => 
+    client.delete('/users/progress/today'),
   
-  logIntake: (userId: number, amountMl: number) => 
-    client.post('/intake', { user_id: userId, amount_ml: amountMl }),
+  logIntake: (amountMl: number) => 
+    client.post('/intake', { amount_ml: amountMl }),
   
-  getProgress: (userId: number) => 
-    client.get(`/users/${userId}/progress`),
+  getProgress: () => 
+    client.get('/users/progress'),
 };

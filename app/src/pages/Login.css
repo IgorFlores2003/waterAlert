@@ -1,0 +1,166 @@
+.login-container {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  background: var(--water-gradient);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.logo-container {
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+  backdrop-filter: blur(10px);
+}
+
+.logo-icon {
+  font-size: 36px;
+  color: white;
+}
+
+.login-header h1 {
+  font-size: 26px;
+  font-weight: 800;
+  margin-bottom: 2px;
+}
+
+.login-header p {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+  text-align: center;
+  color: white;
+}
+
+.login-card h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.login-card p {
+  font-size: 13px;
+  opacity: 0.7;
+  margin-bottom: 20px;
+}
+
+.input-group {
+  text-align: left;
+  margin-bottom: 12px;
+}
+
+.input-group ion-label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.premium-input-wrapper {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.premium-input-wrapper:focus-within {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.premium-input-wrapper ion-icon {
+  font-size: 18px;
+  margin-right: 10px;
+  opacity: 0.6;
+}
+
+.premium-input-wrapper ion-input {
+  --padding-start: 0;
+  --highlight-height: 0;
+  --border-width: 0;
+  color: white;
+  font-size: 15px;
+}
+
+.login-btn {
+  margin-top: 15px;
+  --background: white;
+  --color: var(--ion-color-primary);
+  --border-radius: 10px;
+  font-weight: 700;
+  height: 48px;
+  font-size: 16px;
+}
+
+.login-footer {
+  margin-top: 20px;
+  font-size: 13px;
+}
+
+.login-footer p {
+  margin-bottom: 2px;
+}
+
+.login-footer ion-text {
+  cursor: pointer;
+}
+
+/* Code Squares */
+.code-squares-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+  position: relative;
+}
+
+.code-square {
+  width: 45px;
+  height: 55px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 800;
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.code-square.active {
+  border-color: white;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+.hidden-input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  cursor: pointer;
+}

@@ -6,6 +6,9 @@ import { LocalNotifications } from '@capacitor/local-notifications';
 import { Capacitor, PluginListenerHandle } from '@capacitor/core';
 import Home from './pages/Home';
 import Setup from './pages/Setup';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import VerifyEmail from './pages/VerifyEmail';
 import { api } from './api/client';
 import { NotificationService } from './services/notificationService';
 
@@ -33,7 +36,7 @@ import './theme/variables.css';
 setupIonicReact();
 
 const App: React.FC = () => {
-  const isRegistered = !!localStorage.getItem('user_id');
+  const isAuthenticated = !!localStorage.getItem('auth_token');
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
@@ -54,13 +57,13 @@ const App: React.FC = () => {
 
           if (userId) {
             try {
-              if (actionId === 'drink_250') {
-                await api.logIntake(parseInt(userId), 250);
-                setToastMessage('250ml registrados com sucesso!');
+              if (actionId === 'drink_180') {
+                await api.logIntake(180);
+                setToastMessage('180ml registrados com sucesso!');
                 setShowToast(true);
-              } else if (actionId === 'drink_500') {
-                await api.logIntake(parseInt(userId), 500);
-                setToastMessage('500ml registrados com sucesso!');
+              } else if (actionId === 'drink_custom') {
+                // For notifications, we might just log a default or open the app
+                setToastMessage('Abra o app para registrar um valor personalizado.');
                 setShowToast(true);
               }
             } catch (error) {
@@ -84,14 +87,23 @@ const App: React.FC = () => {
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
+          <Route exact path="/login">
+            <Login />
+          </Route>
+          <Route exact path="/register">
+            <Register />
+          </Route>
+          <Route exact path="/verify-email">
+            <VerifyEmail />
+          </Route>
           <Route exact path="/home">
-            <Home />
+            {isAuthenticated ? <Home /> : <Redirect to="/login" />}
           </Route>
           <Route exact path="/setup">
-            <Setup />
+            {isAuthenticated ? <Setup /> : <Redirect to="/login" />}
           </Route>
           <Route exact path="/">
-            {isRegistered ? <Redirect to="/home" /> : <Redirect to="/setup" />}
+            {isAuthenticated ? <Redirect to="/home" /> : <Redirect to="/login" />}
           </Route>
         </IonRouterOutlet>
       </IonReactRouter>
