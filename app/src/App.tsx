@@ -95,15 +95,9 @@ const App: React.FC = () => {
           <Route exact path="/verify-email">
             <VerifyEmail />
           </Route>
-          <Route exact path="/home">
-            {localStorage.getItem('auth_token') ? <Home /> : <Redirect to="/login" />}
-          </Route>
-          <Route exact path="/setup">
-            {localStorage.getItem('auth_token') ? <Setup /> : <Redirect to="/login" />}
-          </Route>
-          <Route exact path="/">
-            {localStorage.getItem('auth_token') ? <Redirect to="/home" /> : <Redirect to="/login" />}
-          </Route>
+          <Route exact path="/home" render={() => localStorage.getItem('auth_token') ? <Home /> : <Redirect to="/login" />} />
+          <Route exact path="/setup" render={() => localStorage.getItem('auth_token') ? <Setup /> : <Redirect to="/login" />} />
+          <Route exact path="/" render={() => localStorage.getItem('auth_token') ? <Redirect to="/home" /> : <Redirect to="/login" />} />
         </IonRouterOutlet>
       </IonReactRouter>
       <IonToast

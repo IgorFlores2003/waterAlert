@@ -10,6 +10,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -18,6 +19,7 @@ const Login: React.FC = () => {
       return;
     }
 
+    setIsLoading(true);
     try {
       const res = await api.login({ email, password });
       localStorage.setItem('auth_token', res.data.token);
@@ -27,8 +29,17 @@ const Login: React.FC = () => {
       
       router.push('/home', 'root', 'replace');
     } catch (error: any) {
-      setToastMessage(error.response?.data?.error || 'Erro ao fazer login.');
+      console.error('Login error', error);
+      let msg = 'Erro ao fazer login.';
+      if (!error.response) {
+        msg = 'Servidor inacessível. Verifique sua internet ou se a API no Render está ativa.';
+      } else if (error.response.data?.error) {
+        msg = error.response.data.error;
+      }
+      setToastMessage(msg);
       setShowToast(true);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -76,8 +87,8 @@ const Login: React.FC = () => {
               </div>
             </div>
 
-            <IonButton expand="block" className="login-btn" onClick={handleLogin}>
-              Entrar
+            <IonButton expand="block" className="login-btn" onClick={handleLogin} disabled={isLoading}>
+              {isLoading ? 'Entrando...' : 'Entrar'}
             </IonButton>
 
             <div className="login-footer">
