@@ -204,6 +204,24 @@ app.put("/api/users/profile", authMiddleware, async (req: AuthRequest, res: Resp
   }
 });
 
+// 6. Get User Profile
+app.get("/api/users/profile", authMiddleware, async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    const user = await db("users").where({ id: userId }).first();
+    
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const { password, verification_code, ...publicUser } = user;
+    res.json(publicUser);
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 // 3. Log Intake
 app.post("/api/intake", authMiddleware, async (req: AuthRequest, res: Response) => {
   try {

@@ -20,8 +20,11 @@ export const api = {
   verifyEmail: (data: { email: string, code: string }) => client.post('/auth/verify', data),
 
   // Profile
+  getUserProfile: (id?: string) => client.get('/users/profile'), // Uses token
+  updateUser: (id: string, data: any) => client.put('/users/profile', data), // Uses token
   updateProfile: (data: { name: string; weight: number; height: number; age: number }) => 
     client.put('/users/profile', data),
+  registerUser: (data: any) => client.post('/users', data),
 
   // Water Intake
   resetProgress: () => 

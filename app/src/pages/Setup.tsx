@@ -52,7 +52,7 @@ const Setup: React.FC = () => {
       localStorage.setItem('water_goal', response.data.water_goal_ml.toString());
       
       // Schedule/Update notifications
-      await NotificationService.scheduleHourlyNotifications();
+      await NotificationService.scheduleHourlyNotifications(0, response.data.water_goal_ml);
 
       router.push('/home', 'forward', 'replace');
     } catch (error) {

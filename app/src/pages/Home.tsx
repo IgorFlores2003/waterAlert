@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { LuGlassWater } from 'react-icons/lu';
 import { IonContent, IonPage, IonText, IonIcon, IonLabel, useIonViewWillEnter, useIonRouter, IonToast, IonAlert, IonModal, IonButton, IonInput, IonItem, IonToggle } from '@ionic/react';
-import { addOutline, wineOutline, colorFillOutline, waterOutline, settingsOutline, refreshOutline, timeOutline, checkmarkCircleOutline, trophyOutline, cafeOutline, beerOutline, flaskOutline } from 'ionicons/icons';
+import { addOutline, wineOutline, colorFillOutline, waterOutline, settingsOutline, refreshOutline, timeOutline, checkmarkCircleOutline, trophyOutline, cafeOutline, beerOutline, flaskOutline, lockClosedOutline } from 'ionicons/icons';
 import { api } from '../api/client';
 import { NotificationService } from '../services/notificationService';
 import './Home.css';
