@@ -17,11 +17,22 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
     return res.status(401).json({ error: "No token provided" });
   }
 
-  const [, token] = authHeader.split(" ");
+  const parts = authHeader.split(" ");
+  if (parts.length !== 2) {
+    return res.status(401).json({ error: "Token error" });
+  }
+
+  const token = parts[1];
+  if (!token) {
+    return res.status(401).json({ error: "Token not found" });
+  }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { id: number; email: string };
-    req.user = decoded;
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    req.user = {
+      id: decoded.id,
+      email: decoded.email
+    };
     next();
   } catch (error) {
     return res.status(401).json({ error: "Invalid token" });
