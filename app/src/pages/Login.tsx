@@ -21,9 +21,9 @@ const Login: React.FC = () => {
     try {
       const res = await api.login({ email, password });
       localStorage.setItem('auth_token', res.data.token);
-      localStorage.setItem('user_id', res.data.user.id);
+      localStorage.setItem('user_id', res.data.user.id.toString());
       localStorage.setItem('user_name', res.data.user.name);
-      localStorage.setItem('water_goal', res.data.user.water_goal_ml);
+      localStorage.setItem('water_goal', res.data.user.water_goal_ml.toString());
       
       router.push('/home', 'root', 'replace');
     } catch (error: any) {
@@ -58,7 +58,7 @@ const Login: React.FC = () => {
                   type="email" 
                   value={email} 
                   placeholder="seu@email.com"
-                  onIonChange={e => setEmail(e.detail.value!)}
+                  onIonInput={e => setEmail(e.detail.value!)}
                 />
               </div>
             </div>
@@ -71,7 +71,7 @@ const Login: React.FC = () => {
                   type="password" 
                   value={password} 
                   placeholder="••••••••"
-                  onIonChange={e => setPassword(e.detail.value!)}
+                  onIonInput={e => setPassword(e.detail.value!)}
                 />
               </div>
             </div>

@@ -36,7 +36,6 @@ import './theme/variables.css';
 setupIonicReact();
 
 const App: React.FC = () => {
-  const isAuthenticated = !!localStorage.getItem('auth_token');
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
@@ -97,13 +96,13 @@ const App: React.FC = () => {
             <VerifyEmail />
           </Route>
           <Route exact path="/home">
-            {isAuthenticated ? <Home /> : <Redirect to="/login" />}
+            {localStorage.getItem('auth_token') ? <Home /> : <Redirect to="/login" />}
           </Route>
           <Route exact path="/setup">
-            {isAuthenticated ? <Setup /> : <Redirect to="/login" />}
+            {localStorage.getItem('auth_token') ? <Setup /> : <Redirect to="/login" />}
           </Route>
           <Route exact path="/">
-            {isAuthenticated ? <Redirect to="/home" /> : <Redirect to="/login" />}
+            {localStorage.getItem('auth_token') ? <Redirect to="/home" /> : <Redirect to="/login" />}
           </Route>
         </IonRouterOutlet>
       </IonReactRouter>
